@@ -126,7 +126,8 @@ public class KWArrayList<E>
 	 * @param capacity The initial capacity
 	 */
 	public KWArrayList(int capacity) {
-        
+        this.capacity = capacity;
+		theData = (E[]) new Object[capacity];
 	}
 
 
@@ -138,6 +139,7 @@ public class KWArrayList<E>
 		for(int i = 0; i < size; i++){
 			theData[i] = null;
 		}
+		size = 0;
 	}
 
 
@@ -153,7 +155,8 @@ public class KWArrayList<E>
 	 */
 	public E set(int index, E newValue) {
 		if(index > size) throw new ArrayIndexOutOfBoundsException();
-		else theData[index] = newValue;
+		else if(index == size) size++;
+		theData[index] = newValue;
 		return newValue;
 	}
 
@@ -170,7 +173,15 @@ public class KWArrayList<E>
 	 *         less than zero or greater than size
 	 */
 	public boolean add(int index, E anEntry) {
-
+		if(index < 0 || index > size) throw new ArrayIndexOutOfBoundsException();
+		size++;
+		E item = (E) theData[index];
+		set(index, anEntry);
+		for(int i = index + 1; i < size; i++){
+			E temp = (E) theData[i];
+			set(i, (E) item);
+			item = temp;
+		}
 		return true;
 	} 
 
@@ -183,13 +194,11 @@ public class KWArrayList<E>
 	 *       in this list, or -1 if this list does not contain the element
 	 */
 	public int indexOf(E item) {
-		for(int i = 0; i < theData.length; i++){
-			if(theData[i]== item) return i;
+		for(int i = 0; i < this.size; i++){
+			if(theData[i].equals(item)) return i;
 		}
 		return -1;
 	}
-	//works with ints for now
-
 
 	/**
 	 * Returns true if this list contains the specified element.
@@ -197,10 +206,10 @@ public class KWArrayList<E>
 	 * @return true if this list contains the specified element
 	 */
 	public boolean contains(E item) {		 
-		for(E i : theData){
-			if(i == item) return true;
+		for(int i = 0; i < this.size; i++){
+			if(theData[i].equals(item)) return true;
 		}
-		return  false;
+		return false;
 	}
 
 
@@ -209,7 +218,7 @@ public class KWArrayList<E>
 	 * @return true if this list contains no elements and false otherwise.
 	 */
 	public boolean isEmpty() {		 
-		return (theData[0] == null);
+		return (size > 0);
 	}
 
 
@@ -223,7 +232,7 @@ public class KWArrayList<E>
 	 */
 	public int lastIndexOf(E item) {		 			
 		for(int i = size - 1; i >= 0; i--){
-			if(theData[i] == item) return i;
+			if(theData[i].equals(item)) return i;
 		}
 		return -1;
 	}
@@ -235,6 +244,16 @@ public class KWArrayList<E>
 	 * @return true if item is found and removed; otherwise, return false.
 	 */
 	public boolean remove(E item) {    	 
-		return true;
+		for(int i = 0; i < this.size; i++){
+			if(theData[i].equals(item)){
+				for(int j = i + 1; j < size; j++){
+					theData[i] = theData[j];
+					i++;
+				}
+				size--;
+				return true;
+			}
+		}
+		return false;
 	}
 }
